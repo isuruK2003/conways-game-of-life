@@ -129,7 +129,8 @@ function main() {
     const cellSize = 10;
     const rows = Math.floor(window.innerHeight / cellSize)
     const cols = Math.floor(window.innerWidth / cellSize)
-    const game = new GameOfLife("canvas", new Grid(rows, cols, cellSize, cellSize));
+    const grid = new Grid(rows, cols, cellSize, cellSize);
+    const game = new GameOfLife("canvas", grid);
     document.getElementById("startButton").addEventListener("click", () => {
         game.render();
     });

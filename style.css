@@ -1,16 +1,30 @@
 body {
     margin: 0;
+    background: #000;
 }
 
 .control-box {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    bottom: 10px;
+    right: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
     z-index: 1;
+}
+
+.button {
+    border: none;
+    padding: 8px 16px;
+    background: linear-gradient(#258ff9, #023e79);
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button:active {
+    background: linear-gradient(#023e79, #258ff9);
 }
 
 canvas {
