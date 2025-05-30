@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+}
+
+.control-box {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    z-index: 1;
+}
+
+canvas {
+    position: absolute;
+    background-color: black;
+    padding: 0;
+    margin: 0;
+}
