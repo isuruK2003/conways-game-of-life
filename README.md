@@ -1,10 +1,6 @@
 # Conway's Game of Life
 
-A simple interactive implementation of Conway's Game of Life using HTML5 Canvas and JavaScript.
-
-## Demo
-
-[Live Demo](https://isuruk2003.github.io/conways-game-of-life/)
+A simple interactive implementation of Conway's Game of Life using HTML5 Canvas and JavaScript. Checkout the demo: [isuruk2003.github.io/conways-game-of-life/](https://isuruk2003.github.io/conways-game-of-life/)
 
 ## What is Conway's Game of Life?
 
@@ -20,7 +16,3 @@ At each step, the following transitions occur for every cell:
 4. **Reproduction:** Any dead cell with exactly three live neighbors becomes a live cell.
 
 These simple rules can lead to surprisingly complex and beautiful patterns over time.
-
----
-
-Inspired by John Conway's Game of Life.
