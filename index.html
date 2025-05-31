@@ -4,14 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Game of Life</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="control-box">
-        <button class="button" id="startButton">Start</button>
-        <button class="button" id="stopButton">Stop</button>
+        <button class="button" id="startButton">
+            <img src="assets/icons/play_arrow_24dp.svg" />
+        </button>
+        <button class="button" id="pauseButton">
+            <img src="assets/icons/pause_24dp.svg" />
+        </button>
+        <button class="button" id="resetButton">
+            <img src="assets/icons/refresh_24dp.svg" />
+        </button>
     </div>
     <canvas id="canvas"></canvas>
     <script src="script.js"></script>

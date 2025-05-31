@@ -22,6 +22,10 @@ class Grid {
         newGrid.cells = [...this.cells];
         return newGrid;
     }
+
+    clearGrid() {
+        this.cells = new Array(this.rows * this.cols).fill(0);
+    }
 }
 
 class GameOfLife {
@@ -60,7 +64,7 @@ class GameOfLife {
                 handleMouseEvent(event);
             }
         });
-
+        this.drawGridLines();
     }
 
     fillCell(x, y, color) {
@@ -73,12 +77,38 @@ class GameOfLife {
         );
     }
 
-    clearGrid() {
+    drawGridLines() {
+        this.ctx.strokeStyle = "#444";
+        this.ctx.lineWidth = 0.5;
+
+        for (let x = 0; x <= this.grid.width; x += this.grid.cellWidth) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, 0);
+            this.ctx.lineTo(x, this.grid.height);
+            this.ctx.stroke();
+        }
+
+        for (let y = 0; y <= this.grid.height; y += this.grid.cellHeight) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, y);
+            this.ctx.lineTo(this.grid.width, y);
+            this.ctx.stroke();
+        }
+    }
+
+    clearCanvas() {
         this.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
     }
 
+    reset() {
+        this.cancelRender();
+        this.grid.clearGrid();
+        this.clearCanvas();
+        this.drawGridLines();
+    }
+
     renderFrame() {
-        this.clearGrid();
+        this.clearCanvas();
         const newGrid = this.grid.getClone();
         for (let i = 0; i < this.grid.rows * this.grid.cols; i++) {
             const x = i % this.grid.cols;
@@ -101,10 +131,12 @@ class GameOfLife {
             if (state === 1) {
                 this.fillCell(x, y, "#fff");
                 if (n < 2 || n > 3) newGrid.setCellState(x, y, 0);
-            } else if (n === 3) {
-                newGrid.setCellState(x, y, 1);
+            } else {
+                this.fillCell(x, y, "#000");
+                if (n === 3) newGrid.setCellState(x, y, 1);
             }
         }
+        this.drawGridLines();
         this.grid = newGrid;
     }
 
@@ -117,8 +149,8 @@ class GameOfLife {
     }
 
     cancelRender() {
-        cancelAnimationFrame(this.animationId);
         if (this.animationId !== null) {
+            cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
     }
@@ -126,16 +158,23 @@ class GameOfLife {
 
 
 function main() {
+
     const cellSize = 10;
-    const rows = Math.floor(window.innerHeight / cellSize)
     const cols = Math.floor(window.innerWidth / cellSize)
+    const rows = Math.floor(window.innerHeight / cellSize)
     const grid = new Grid(rows, cols, cellSize, cellSize);
     const game = new GameOfLife("canvas", grid);
+
     document.getElementById("startButton").addEventListener("click", () => {
         game.render();
     });
-    document.getElementById("stopButton").addEventListener("click", () => {
+
+    document.getElementById("pauseButton").addEventListener("click", () => {
         game.cancelRender();
+    });
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+        game.reset();
     });
 }
 
