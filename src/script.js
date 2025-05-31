@@ -29,10 +29,10 @@ class Grid {
 }
 
 class GameOfLife {
-    constructor(id, grid) {
+    constructor(id, grid, frameIntervalMillis = 100) {
         this.grid = grid;
         this.lastUpdateTime = 0;
-        this.frameInterval = 100;
+        this.frameInterval = frameIntervalMillis;
         this.animationId = null;
         this.canvas = document.getElementById(id);
         if (!this.canvas) {
@@ -118,11 +118,9 @@ class GameOfLife {
             for (let dx of [-1, 0, 1]) {
                 for (let dy of [-1, 0, 1]) {
                     if (dx === 0 && dy === 0) continue;
-                    const nx = x + dx;
-                    const ny = y + dy;
-                    if (nx >= 0 && nx < this.grid.cols && ny >= 0 && ny < this.grid.rows) {
-                        if (this.grid.getCellState(nx, ny) === 1) n++;
-                    }
+                    const nx = (x + dx) % this.grid.cols;
+                    const ny = (y + dy) % this.grid.rows;
+                    if (this.grid.getCellState(nx, ny) === 1) n++;
                 }
             }
 
@@ -156,7 +154,6 @@ class GameOfLife {
     }
 }
 
-
 function main() {
 
     const cellSize = 10;
@@ -178,6 +175,4 @@ function main() {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-    main()
-})
+window.addEventListener("DOMContentLoaded", main)
