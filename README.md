@@ -1,6 +1,6 @@
 # Conway's Game of Life
 
-A simple interactive implementation of Conway's Game of Life using HTML5 Canvas and JavaScript. Checkout the demo: [isuruk2003.github.io/conways-game-of-life/](https://isuruk2003.github.io/conways-game-of-life/)
+A simple interactive implementation of Conway's Game of Life using HTML5 Canvas and JavaScript. Checkout the demo: [isuruk2003.github.io/conways-game-of-life/](https://isuruk2003.github.io/conways-game-of-life/src/index.html)
 
 ## What is Conway's Game of Life?
 
