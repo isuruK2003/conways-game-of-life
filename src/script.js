@@ -157,8 +157,8 @@ class GameOfLife {
 function main() {
 
     const cellSize = 10;
-    const cols = Math.floor(window.innerWidth / cellSize)
-    const rows = Math.floor(window.innerHeight / cellSize)
+    const cols = Math.floor((window.innerWidth - 1) / cellSize);
+    const rows = Math.floor((window.innerHeight - 1) / cellSize);
     const grid = new Grid(rows, cols, cellSize, cellSize);
     const game = new GameOfLife("canvas", grid);
 
