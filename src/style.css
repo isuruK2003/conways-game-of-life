@@ -1,5 +1,8 @@
 :root {
-    --accent-color: rgb(235, 137, 0);
+    --accent-color-light-1: rgb(239, 167, 64);
+    --accent-color: rgb(226, 135, 9);
+    --accent-color-dark-1: rgb(196, 115, 3);
+    --accent-color-dark-2: rgb(183, 108, 3);
 }
 
 * {
@@ -18,7 +21,7 @@ canvas {
     background-color: black;
 }
 
-.control-box {
+#control-box {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -28,13 +31,13 @@ canvas {
     border-radius: 32px;
     margin: 16px;
     border: 1px solid #333;
-    width: 120px;
 }
 
-.control-box .basic-controls {
+#control-box #control-box-buttons {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     width: 100%;
 }
 
@@ -47,6 +50,19 @@ canvas {
     height: 32px;
     border-radius: 16px;
     background-color: var(--accent-color);
+    transition: 0.3s;
+}
+
+.button:hover {
+    background-color: var(--accent-color-dark-1);
+}
+
+.button:active {
+    background-color: var(--accent-color-dark-2);
+}
+
+.button:disabled {
+    opacity: 0.6;
 }
 
 .button img {

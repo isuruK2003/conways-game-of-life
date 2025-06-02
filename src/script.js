@@ -154,6 +154,12 @@ class GameOfLife {
     }
 }
 
+class Icons {
+    static Play = "../assets/icons/play_arrow_24dp.svg";
+    static Pause = "../assets/icons/pause_24dp.svg";
+    static Reset = "../assets/icons/reset_24dp.svg";
+}
+
 function main() {
 
     const cellSize = 10;
@@ -162,17 +168,52 @@ function main() {
     const grid = new Grid(rows, cols, cellSize, cellSize);
     const game = new GameOfLife("canvas", grid);
 
-    document.getElementById("startButton").addEventListener("click", () => {
-        game.render();
-    });
+    const controlBoxButtons = document.getElementById("control-box-buttons");
 
-    document.getElementById("pauseButton").addEventListener("click", () => {
-        game.cancelRender();
-    });
+    const createButton = (icon, onClick) => {
+        const button = document.createElement("button");
+        const iconImg = document.createElement("img");
+        button.onclick = onClick;
+        button.className = "button";
+        iconImg.src = icon;
+        button.appendChild(iconImg);
+        return button;
+        ;
+    };
 
-    document.getElementById("resetButton").addEventListener("click", () => {
-        game.reset();
-    });
+    const startButton = createButton(
+        Icons.Play,
+        () => {
+            game.render();
+            pauseConfig();
+        }
+    );
+
+    const pauseButton = createButton(
+        Icons.Pause,
+        () => {
+            game.cancelRender();
+            startConfig();
+        }
+    );
+
+    const resetButton = createButton(
+        Icons.Reset,
+        () => {
+            game.reset();
+            startConfig();
+        }
+    );
+
+    const startConfig = () => {
+        controlBoxButtons.replaceChildren(startButton, resetButton);
+    };
+
+    const pauseConfig = () => {
+        controlBoxButtons.replaceChildren(pauseButton, resetButton);
+    };
+
+    startConfig();
 }
 
 window.addEventListener("DOMContentLoaded", main)
