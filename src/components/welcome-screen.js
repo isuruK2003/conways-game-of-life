@@ -5,11 +5,6 @@ class WelcomeScreen extends HTMLElement {
     }
 
     connectedCallback() {
-        this.renderHtml();
-        this.renderStyles();
-    }
-
-    renderHtml() {
         this.shadowRoot.innerHTML = `
         <div id="welcome-screen-container">
             <div id="welcome-screen">
@@ -34,13 +29,7 @@ class WelcomeScreen extends HTMLElement {
                 </p>
             </div>
         </div>
-        `;
-        this.shadowRoot.querySelector('#close-button').addEventListener('click', () => this.remove());
-    }
-
-    renderStyles() {
-        const styleElement = document.createElement("style")
-        styleElement.innerHTML = `
+        <style>
             #welcome-screen-container {
                 position: absolute;
                 z-index: 2;
@@ -52,7 +41,7 @@ class WelcomeScreen extends HTMLElement {
                 justify-content: center;
                 backdrop-filter: blur(4px);
             }
-
+        
             #welcome-screen {
                 position: relative;
                 width: 520px;
@@ -71,7 +60,7 @@ class WelcomeScreen extends HTMLElement {
                 text-align: center;
                 font-weight: bold;
             }
-
+        
             #welcome-screen p {
                 font-size: 16px;
                 margin-bottom: 20px;
@@ -79,7 +68,7 @@ class WelcomeScreen extends HTMLElement {
                 line-height: 1.6;
                 text-align: center;
             }
-
+        
             #welcome-screen ul {
                 list-style: none;
                 padding: 0;
@@ -88,7 +77,7 @@ class WelcomeScreen extends HTMLElement {
                 border-radius: 8px;
                 padding: 20px;
             }
-
+        
             #welcome-screen ul li {
                 margin-bottom: 12px;
                 color: #ccc;
@@ -97,7 +86,7 @@ class WelcomeScreen extends HTMLElement {
                 font-size: 15px;
                 line-height: 1.5;
             }
-
+        
             #welcome-screen ul li::before {
                 content: '●';
                 position: absolute;
@@ -106,21 +95,21 @@ class WelcomeScreen extends HTMLElement {
                 font-size: 18px;
                 top: -2px;
             }
-
+        
             #welcome-screen ul li:last-child {
                 margin-bottom: 0;
             }
-
+        
             #welcome-screen a {
                 color: var(--accent-color);
                 text-decoration: none;
                 transition: color 0.3s ease;
             }
-
+        
             #welcome-screen a:hover {
                 color: var(--accent-color-light-1);
             }
-
+        
             #welcome-screen #close-button {
                 position: absolute;
                 top: 16px;
@@ -140,28 +129,29 @@ class WelcomeScreen extends HTMLElement {
                 transition: all 0.3s ease;
                 line-height: 1;
             }
-
+        
             #welcome-screen #close-button:hover {
                 background: #444;
                 color: #fff;
             }
-
+        
             @media (max-width: 600px) {
                 #welcome-screen {
                     margin: 20px;
                     padding: 30px 25px;
                 }
-
+        
                 #welcome-screen h1 {
                     font-size: 26px;
                 }
-
+        
                 #welcome-screen p {
                     font-size: 15px;
                 }
             }
+        </style>
         `;
-        this.shadowRoot.appendChild(styleElement);
+        this.shadowRoot.querySelector('#close-button').addEventListener('click', () => this.remove());
     }
 }
 

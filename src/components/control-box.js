@@ -50,24 +50,13 @@ class ControlBox extends HTMLElement {
     }
 
     connectedCallback() {
-        this.renderHtml();
-        this.renderStyles();
-    }
-
-    renderHtml() {
-        const container = document.createElement("div");
-        container.innerHTML = `
+        this.shadowRoot.innerHTML = `
         <div id="control-box">
             <div id="control-box-buttons">
             </div>
         </div>
-        `;
-        this.shadowRoot.appendChild(container);
-    }
 
-    renderStyles() {
-        const styleElement = document.createElement("style");
-        styleElement.innerHTML = `
+        <style>
         .button {
             border: none;
             padding: 8px 8px;
@@ -79,23 +68,23 @@ class ControlBox extends HTMLElement {
             background-color: var(--accent-color);
             transition: 0.3s;
         }
-    
+
         .button:hover {
             background-color: var(--accent-color-dark-1);
         }
-    
+
         .button:active {
             background-color: var(--accent-color-dark-2);
         }
-    
+
         .button:disabled {
             opacity: 0.6;
         }
-    
+
         .button img {
             width: 100%;
         }
-    
+
         #control-box {
             position: absolute;
             bottom: 0;
@@ -107,7 +96,7 @@ class ControlBox extends HTMLElement {
             margin: 16px;
             border: 1px solid #333;
         }
-    
+
         #control-box #control-box-buttons {
             display: flex;
             align-items: center;
@@ -115,8 +104,8 @@ class ControlBox extends HTMLElement {
             gap: 12px;
             width: 100%;
         }
+        </style>
         `;
-        this.shadowRoot.appendChild(styleElement);
     }
 }
 
