@@ -88,8 +88,8 @@ export class GameOfLife {
             for (let dx of [-1, 0, 1]) {
                 for (let dy of [-1, 0, 1]) {
                     if (dx === 0 && dy === 0) continue;
-                    const nx = (x + dx) % this.grid.cols;
-                    const ny = (y + dy) % this.grid.rows;
+                    const nx = (x + dx + this.grid.cols) % this.grid.cols;
+                    const ny = (y + dy + this.grid.rows) % this.grid.rows;
                     if (this.grid.getCellState(nx, ny) === 1) n++;
                 }
             }
