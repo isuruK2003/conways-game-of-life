@@ -9,40 +9,11 @@
 </head>
 
 <body>
-    <div id="welcome-screen-container">
-        <div id="welcome-screen-container">
-            <div id="welcome-screen">
-                <button id="close-button"
-                    onclick="document.getElementById('welcome-screen-container').remove()">&#10005;</button>
-                <h1>Conway's Game of Life</h1>
-                <p>
-                    Conway's Game of Life is a zero-player game that simulates cellular evolution.
-                    Each cell on the grid lives, dies, or is born based on a few simple rules:
-                </p>
-                <ul>
-                    <li>A live cell with 2 or 3 neighbors survives.</li>
-                    <li>A dead cell with exactly 3 neighbors becomes alive.</li>
-                    <li>All other cells die or remain dead.</li>
-                </ul>
-                <p>
-                    To play the game create your own pattern on the grid and click on the play button.
-                </p>
-
-                <p>
-                    View source on
-                    <a href="https://github.com/isuruK2003/conways-game-of-life" target="_blank"
-                        rel="noopener noreferrer">
-                        GitHub
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div id="control-box">
-        <div id="control-box-buttons">
-        </div>
-    </div>
+    <welcome-screen></welcome-screen>
+    <control-box></control-box>
     <canvas id="canvas"></canvas>
+    <script type="module" src="./components/control-box.js"></script>
+    <script type="module" src="./components/welcome-screen.js"></script>
     <script type="module" src="./script.js"></script>
 </body>
 
