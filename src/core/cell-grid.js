@@ -1,5 +1,5 @@
-export class Grid {
-    constructor(rows, cols, cellWidth = 10, cellHeight = 10) {
+export class CellGrid {
+    constructor(rows, cols, cellWidth, cellHeight) {
         this.rows = rows;
         this.cols = cols;
         this.cells = new Array(rows * cols).fill(0);
@@ -18,7 +18,7 @@ export class Grid {
     }
 
     getClone() {
-        const newGrid = new Grid(this.rows, this.cols, this.cellWidth, this.cellHeight);
+        const newGrid = new CellGrid(this.rows, this.cols, this.cellWidth, this.cellHeight);
         newGrid.cells = [...this.cells];
         return newGrid;
     }

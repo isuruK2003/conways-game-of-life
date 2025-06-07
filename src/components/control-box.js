@@ -7,7 +7,7 @@ class ControlBox extends HTMLElement {
     }
 
     set game(newGame) {
-        if (this._game) this._game.cancelRender();
+        if (this._game) this._game.reset();
 
         this._game = newGame;
 
@@ -24,12 +24,12 @@ class ControlBox extends HTMLElement {
         };
 
         const startButton = createButton(Icons.Play, () => {
-            newGame.render();
+            newGame.play();
             pauseConfig();
         });
 
         const pauseButton = createButton(Icons.Pause, () => {
-            newGame.cancelRender();
+            newGame.pause();
             startConfig();
         });
 
