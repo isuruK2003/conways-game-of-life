@@ -90,7 +90,7 @@ export class CanvasGrid {
             this.lastUpdateTime = timestamp;
             this.renderFrame();
         }
-        this.animationId = requestAnimationFrame((ts) => this.render(ts));  // store animation ID
+        this.animationId = requestAnimationFrame((ts) => this.render(ts));
     }
 
     cancelRender() {
