@@ -9,6 +9,35 @@
 </head>
 
 <body>
+    <div id="welcome-screen-container">
+        <div id="welcome-screen-container">
+            <div id="welcome-screen">
+                <button id="close-button"
+                    onclick="document.getElementById('welcome-screen-container').remove()">&#10005;</button>
+                <h1>Conway's Game of Life</h1>
+                <p>
+                    Conway's Game of Life is a zero-player game that simulates cellular evolution.
+                    Each cell on the grid lives, dies, or is born based on a few simple rules:
+                </p>
+                <ul>
+                    <li>A live cell with 2 or 3 neighbors survives.</li>
+                    <li>A dead cell with exactly 3 neighbors becomes alive.</li>
+                    <li>All other cells die or remain dead.</li>
+                </ul>
+                <p>
+                    Draw a patten n the grid and press play button to begin.
+                </p>
+
+                <p>
+                    View source on
+                    <a href="https://github.com/isuruK2003/conways-game-of-life" target="_blank"
+                        rel="noopener noreferrer">
+                        GitHub
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
     <div id="control-box">
         <div id="control-box-buttons">
         </div>
