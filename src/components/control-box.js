@@ -11,53 +11,47 @@ class ControlBox extends HTMLElement {
 
         this._game = newGame;
 
-        const controlBoxButtons = this.shadowRoot.getElementById("control-box-buttons");
-
-        const createButton = (icon, onClick) => {
-            const button = document.createElement("button");
-            const iconImg = document.createElement("img");
-            button.onclick = onClick;
-            button.className = "button";
-            iconImg.src = icon;
-            button.appendChild(iconImg);
-            return button;
-        };
-
-        const startButton = createButton(Icons.Play, () => {
-            newGame.play();
-            pauseConfig();
+        this.shadowRoot.querySelector("#play-pause-button").addEventListener('click', (e) => {
+            newGame.toggle();
+            const img = this.shadowRoot.querySelector("#play-pause-button-img");
+            if (newGame.isPlaying) {
+                img.src = Icons.Pause;
+            } else {
+                img.src = Icons.Play;
+            }
         });
 
-        const pauseButton = createButton(Icons.Pause, () => {
-            newGame.pause();
-            startConfig();
+        this.shadowRoot.querySelector("#grid-toggle-button").addEventListener('click', (e) => {
+            newGame.toggleGridLines();
+            const img = this.shadowRoot.querySelector("#grid-toggle-button-img");
+            if (newGame.gridLinesEnabled) {
+                img.src = Icons.Grid;
+            } else {
+                img.src = Icons.Grid;
+            }
         });
 
-        const resetButton = createButton(Icons.Reset, () => {
+        this.shadowRoot.querySelector("#reset-button").addEventListener('click', (e) => {
             newGame.reset();
-            startConfig();
         });
-
-        const startConfig = () => {
-            controlBoxButtons.replaceChildren(startButton, resetButton);
-        };
-
-        const pauseConfig = () => {
-            controlBoxButtons.replaceChildren(pauseButton, resetButton);
-        };
-
-        startConfig();
     }
 
     connectedCallback() {
         this.shadowRoot.innerHTML = `
         <div id="control-box">
-            <div id="control-box-buttons">
-            </div>
+            <button id="play-pause-button">
+                <img id="play-pause-button-img" src="${Icons.Play}">
+            </button>
+            <button id="reset-button">
+                <img src="${Icons.Reset}">
+            </button>
+            <button id="grid-toggle-button">
+                <img id="grid-toggle-button-img" src="${Icons.Grid}">
+            </button>
         </div>
 
         <style>
-        .button {
+        button {
             border: none;
             padding: 8px 8px;
             color: #fff;
@@ -65,24 +59,35 @@ class ControlBox extends HTMLElement {
             width: 32px;
             height: 32px;
             border-radius: 16px;
-            background-color: var(--accent-color);
+            background-color: rgb(226, 135, 9);
             transition: 0.3s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .button:hover {
-            background-color: var(--accent-color-dark-1);
+        button:hover:not(:disabled) {
+            background-color: rgb(196, 115, 3);
         }
 
-        .button:active {
-            background-color: var(--accent-color-dark-2);
+        button:active:not(:disabled) {
+            background-color: rgb(183, 108, 3);
         }
 
-        .button:disabled {
+        button:disabled {
             opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .button img {
+        button:focus {
+            box-shadow: 0 0 0 3px rgba(226, 136, 9, 0.3);
+        }
+
+        button img {
             width: 100%;
+            height: auto;
+            display: block;
         }
 
         #control-box {
@@ -95,14 +100,11 @@ class ControlBox extends HTMLElement {
             border-radius: 32px;
             margin: 16px;
             border: 1px solid #333;
-        }
 
-        #control-box #control-box-buttons {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            width: 100%;
         }
         </style>
         `;

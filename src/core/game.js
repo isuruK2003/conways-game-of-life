@@ -1,13 +1,15 @@
 export class GameOfLife {
     constructor(canvasGrid) {
         this.canvasGrid = canvasGrid;
+        this.isPlaying = false;
+        this.gridLinesEnabled = true;
         this.canvasGrid.setRenderFrame(() => {
             const currentGrid = this.canvasGrid.cellGrid;
             const newGrid = this.canvasGrid.cellGrid.getClone();
             for (let i = 0; i < currentGrid.rows * currentGrid.cols; i++) {
                 const x = i % currentGrid.cols;
                 const y = Math.floor(i / currentGrid.cols);
-        
+
                 let n = 0;
                 for (let dx of [-1, 0, 1]) {
                     for (let dy of [-1, 0, 1]) {
@@ -17,9 +19,9 @@ export class GameOfLife {
                         if (currentGrid.getCellState(nx, ny) === 1) n++;
                     }
                 }
-        
+
                 const state = currentGrid.getCellState(x, y);
-        
+
                 if (state === 1) {
                     this.canvasGrid.fillCell(x, y, "#fff");
                     if (n < 2 || n > 3) newGrid.setCellState(x, y, 0);
@@ -29,22 +31,28 @@ export class GameOfLife {
                 }
             }
             this.canvasGrid.cellGrid = newGrid;
-            this.canvasGrid.drawGridLines();
+            this.gridLinesEnabled && this.canvasGrid.drawGridLines();
         });
     }
 
-    play() {
-        this.canvasGrid.render();
+    toggle() {
+        if (this.isPlaying) {
+            this.canvasGrid.cancelRender();
+        } else {
+            this.canvasGrid.render();
+        }
+        this.isPlaying = !this.isPlaying;
     }
 
-    pause() {
-        this.canvasGrid.cancelRender();
+    toggleGridLines() {
+        this.gridLinesEnabled = !this.gridLinesEnabled;
     }
 
     reset() {
         this.canvasGrid.cancelRender();
         this.canvasGrid.cellGrid.clearGrid();
         this.canvasGrid.clearCanvas();
-        this.canvasGrid.drawGridLines();
+        this.gridLinesEnabled && this.canvasGrid.drawGridLines();
+        this.isPlaying = false;
     }
 }

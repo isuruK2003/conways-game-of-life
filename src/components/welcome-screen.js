@@ -41,16 +41,17 @@ class WelcomeScreen extends HTMLElement {
                 justify-content: center;
                 backdrop-filter: blur(4px);
             }
-        
+                
             #welcome-screen {
-                position: relative;
-                width: 520px;
-                max-width: 90vw;
+                position: relative;                
                 background: #1a1a1a;
                 border-radius: 12px;
-                padding: 40px;
                 border: 1px solid #333;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                margin: 16px;
+                padding: 16px;
+                max-height: 450px;
+                max-width: 550px;
             }
             
             #welcome-screen h1 {
@@ -91,7 +92,7 @@ class WelcomeScreen extends HTMLElement {
                 content: '●';
                 position: absolute;
                 left: 0;
-                color: var(--accent-color);
+                color: rgb(196, 115, 3);
                 font-size: 18px;
                 top: -2px;
             }
@@ -101,13 +102,13 @@ class WelcomeScreen extends HTMLElement {
             }
         
             #welcome-screen a {
-                color: var(--accent-color);
+                color: rgb(196, 115, 3);
                 text-decoration: none;
                 transition: color 0.3s ease;
             }
         
             #welcome-screen a:hover {
-                color: var(--accent-color-light-1);
+                color: rgba(196, 116, 3, 0.6);
             }
         
             #welcome-screen #close-button {
@@ -136,11 +137,6 @@ class WelcomeScreen extends HTMLElement {
             }
         
             @media (max-width: 600px) {
-                #welcome-screen {
-                    margin: 20px;
-                    padding: 30px 25px;
-                }
-        
                 #welcome-screen h1 {
                     font-size: 26px;
                 }
