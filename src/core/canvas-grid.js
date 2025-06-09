@@ -1,6 +1,6 @@
 import { CellGrid } from "./cell-grid.js";
 
-export class CanvasGrid {
+export class CanvasGridRenderer {
     constructor(
         canvasId,
         rows,

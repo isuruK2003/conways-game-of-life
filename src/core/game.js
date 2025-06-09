@@ -1,8 +1,8 @@
 export class GameOfLife {
-    constructor(canvasGrid) {
+    constructor(gridRenderer) {
         this.isPlaying = false;
-        this.canvasGrid = canvasGrid;
-        this.canvasGrid.onRenderFrame = (x, y, currentGrid, bufferGrid) => {
+        this.gridRenderer = gridRenderer;
+        this.gridRenderer.onRenderFrame = (x, y, currentGrid, bufferGrid) => {
             let n = 0;
             for (let dx of [-1, 0, 1]) {
                 for (let dy of [-1, 0, 1]) {
@@ -24,20 +24,20 @@ export class GameOfLife {
     }
 
     toggle() {
-        this.isPlaying ? this.canvasGrid.cancelRender() : this.canvasGrid.render();
+        this.isPlaying ? this.gridRenderer.cancelRender() : this.gridRenderer.render();
         this.isPlaying = !this.isPlaying;
     }
 
     toggleGridLines() {
-        this.canvasGrid.gridLinesEnabled = !this.canvasGrid.gridLinesEnabled;
-        !this.isPlaying && this.canvasGrid.renderFrame();
+        this.gridRenderer.gridLinesEnabled = !this.gridRenderer.gridLinesEnabled;
+        !this.isPlaying && this.gridRenderer.renderFrame();
     }
 
     reset() {
-        this.canvasGrid.cancelRender();
-        this.canvasGrid.cellGrid.clearGrid();
-        this.canvasGrid.clearCanvas();
-        this.canvasGrid.renderGridLines();
+        this.gridRenderer.cancelRender();
+        this.gridRenderer.cellGrid.clearGrid();
+        this.gridRenderer.clearCanvas();
+        this.gridRenderer.renderGridLines();
         this.isPlaying = false;
     }
 }
