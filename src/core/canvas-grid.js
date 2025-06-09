@@ -24,7 +24,6 @@ export class CanvasGrid {
             const y = Math.floor((event.y) / this.cellGrid.cellHeight);
             this.cellGrid.setCellState(x, y, 1);
             this.fillCell(x, y, "#fff");
-            !this.animationId && this.renderFrame({ sideEffects: false });
         }
         let isMouseDown = false;
         window.addEventListener("mousedown", () => {
@@ -32,6 +31,7 @@ export class CanvasGrid {
         });
         window.addEventListener("mouseup", () => {
             isMouseDown = false;
+            !this.animationId && this.renderFrame({ sideEffects: false });
         });
         this.canvas.addEventListener("mousedown", (event) => {
             handleMouseEvent(event);
