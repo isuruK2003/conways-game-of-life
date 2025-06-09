@@ -14,25 +14,19 @@ class ControlBox extends HTMLElement {
         this.shadowRoot.querySelector("#play-pause-button").addEventListener('click', (e) => {
             newGame.toggle();
             const img = this.shadowRoot.querySelector("#play-pause-button-img");
-            if (newGame.isPlaying) {
-                img.src = Icons.Pause;
-            } else {
-                img.src = Icons.Play;
-            }
+            img.src = newGame.isPlaying ? Icons.Pause : Icons.Play;
         });
 
         this.shadowRoot.querySelector("#grid-toggle-button").addEventListener('click', (e) => {
             newGame.toggleGridLines();
             const img = this.shadowRoot.querySelector("#grid-toggle-button-img");
-            if (newGame.gridLinesEnabled) {
-                img.src = Icons.Grid;
-            } else {
-                img.src = Icons.Grid;
-            }
+            img.src = newGame.gridRenderer.gridLinesEnabled ? Icons.Grid : Icons.Grid;
         });
 
         this.shadowRoot.querySelector("#reset-button").addEventListener('click', (e) => {
             newGame.reset();
+            const img = this.shadowRoot.querySelector("#play-pause-button-img");
+            img.src = newGame.isPlaying ? Icons.Pause : Icons.Play;
         });
     }
 
