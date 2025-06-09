@@ -1,12 +1,8 @@
 export class CellGrid {
-    constructor(rows, cols, cellWidth, cellHeight) {
+    constructor(rows, cols) {
         this.rows = rows;
         this.cols = cols;
         this.cells = new Array(rows * cols).fill(0);
-        this.cellWidth = cellWidth;
-        this.cellHeight = cellHeight;
-        this.width = this.cellWidth * cols;
-        this.height = this.cellHeight * rows;
     }
 
     getCellState(x, y) {
@@ -18,7 +14,7 @@ export class CellGrid {
     }
 
     getClone() {
-        const newGrid = new CellGrid(this.rows, this.cols, this.cellWidth, this.cellHeight);
+        const newGrid = new CellGrid(this.rows, this.cols);
         newGrid.cells = [...this.cells];
         return newGrid;
     }

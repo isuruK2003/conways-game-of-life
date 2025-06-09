@@ -30,7 +30,7 @@ export class GameOfLife {
 
     toggleGridLines() {
         this.canvasGrid.gridLinesEnabled = !this.canvasGrid.gridLinesEnabled;
-        !this.isPlaying && this.canvasGrid.renderFrame({ sideEffects: false });
+        !this.isPlaying && this.canvasGrid.renderFrame();
     }
 
     reset() {
