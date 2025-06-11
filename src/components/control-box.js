@@ -28,6 +28,25 @@ class ControlBox extends HTMLElement {
             const img = this.shadowRoot.querySelector("#play-pause-button-img");
             img.src = newGame.isPlaying ? Icons.Pause : Icons.Play;
         });
+
+        this.shadowRoot.querySelector("#save-button").addEventListener('click', (e) => {
+            const name = prompt("Pattern Name?");
+            localStorage.setItem(`pattern-${name}`, JSON.stringify(newGame.gridRenderer.cellGrid.cells));
+        });
+
+        this.shadowRoot.querySelector("#open-library-button").addEventListener('click', (e) => {
+            const matchedItems = {};
+            const pattern = /^pattern-\w+/;
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && pattern.test(key)) {
+                    matchedItems[key] = localStorage.getItem(key);
+                }
+            }
+
+            console.log(matchedItems);
+        });
     }
 
     connectedCallback() {
@@ -41,6 +60,12 @@ class ControlBox extends HTMLElement {
             </button>
             <button id="grid-toggle-button">
                 <img id="grid-toggle-button-img" src="${Icons.Grid}">
+            </button>
+            <button id="save-button">
+                <img id="save-button-img" src="${Icons.Save}">
+            </button>
+            <button id="open-library-button">
+                <img id="open-library-button-img" src="${Icons.Apps}">
             </button>
         </div>
 
