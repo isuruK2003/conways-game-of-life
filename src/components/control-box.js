@@ -1,4 +1,6 @@
 import { Icons } from "../utils/icons.js";
+import { InputBox } from "./input-box.js";
+import { PatternLibrary } from "./pattern-library.js";
 
 class ControlBox extends HTMLElement {
     constructor() {
@@ -30,22 +32,23 @@ class ControlBox extends HTMLElement {
         });
 
         this.shadowRoot.querySelector("#save-button").addEventListener('click', (e) => {
-            const name = prompt("Pattern Name?");
-            localStorage.setItem(`pattern-${name}`, JSON.stringify(newGame.gridRenderer.cellGrid.cells));
+            const inputBox = new InputBox();
+            inputBox.onOk = (name) => {
+                if (name) {
+                    localStorage.setItem(`pattern-${name}`, JSON.stringify(newGame.gridRenderer.cellGrid.cells));
+                    console.log(`Pattern "${name}" saved!`);
+                }
+            };
+            inputBox.show('Save Pattern', 'Enter pattern name...');
         });
 
         this.shadowRoot.querySelector("#open-library-button").addEventListener('click', (e) => {
-            const matchedItems = {};
-            const pattern = /^pattern-\w+/;
-
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && pattern.test(key)) {
-                    matchedItems[key] = localStorage.getItem(key);
-                }
-            }
-
-            console.log(matchedItems);
+            const library = new PatternLibrary();
+            library.onPatternSelect = (pattern) => {
+                // Load the pattern into your game
+                newGame.loadPattern(pattern.pattern);
+            };
+            library.show();
         });
     }
 
