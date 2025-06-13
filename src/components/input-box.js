@@ -20,7 +20,11 @@ export class InputBox extends HTMLElement {
         this.shadowRoot.innerHTML = `
         <div id="input-box-container">
             <div id="input-box">
-                <h2 id="box-title">${this.getAttribute('title') || 'Input'}</h2>
+                <div id="box-header">
+                    <div id="box-title">
+                        ${this.getAttribute('title') || 'Input'}
+                    </div>
+                </div>
                 <input 
                     type="text" 
                     id="box-input" 
@@ -38,122 +42,107 @@ export class InputBox extends HTMLElement {
                 position: fixed;
                 top: 0;
                 left: 0;
-                z-index: 1000;
-                height: 100vh;
-                width: 100vw;
+                width: 100%;
+                height: 100%;
                 background: rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(4px);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                backdrop-filter: blur(4px);
+                z-index: 1000;
+                overflow: hidden;
+                animation: fadeIn 0.2s ease-out;
             }
-                
+
             #input-box {
-                position: relative;                
-                background: #1a1a1a;
+                width: 380px;
+                background-color: #1a1a1a;
                 border-radius: 12px;
-                border: 1px solid #333;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-                margin: 16px;
-                padding: 24px;
-                min-width: 300px;
-                max-width: 400px;
-                width: 90%;
-            }
-            
-            #box-title {
-                font-size: 20px;
-                margin: 0 0 20px 0;
-                color: #fff;
-                text-align: center;
-                font-weight: bold;
-            }
-        
-            #box-input {
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px 16px;
-                font-size: 16px;
-                border: 1px solid #333;
-                border-radius: 8px;
-                color: #fff;
-                background: inherit;
-                margin-bottom: 24px;
-                outline: none;
-                transition: border-color 0.3s ease;
-            }
+                border: solid 1px #333;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 
-            #box-input::placeholder {
-                color: #666;
-            }
-
-            #box-input:focus {
-                border-color: rgba(196, 116, 3, 0.5);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
             }
 
             #button-container {
                 display: flex;
-                gap: 12px;
-                justify-content: flex-end;
+                width: 100%;
+                height: 40px;
             }
 
-            button {
+            #button-container button {
+                width: 100%;
+                height: 100%;
+                font: inherit;
+                background-color: inherit;
                 border: none;
-                padding: 10px 20px;
-                color: #fff;
+                border-top: solid 1px #333;
                 cursor: pointer;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                outline: none;
-                min-width: 70px;
+                color: #888;
+                font-size: 0.9rem;
+            }
+                
+            #button-container button:nth-child(1) {
+                border-bottom-left-radius: 12px;
+            }   
+                    
+            #button-container button:nth-child(2) {
+                border-bottom-right-radius: 12px;
+                border-left: solid 1px #333;
             }
 
-            #cancel-button {
-                background-color: #444;
-            }
-
-            #cancel-button:hover {
-                background-color: #555;
-            }
-
-            #cancel-button:active {
+            #button-container button:hover {
                 background-color: #333;
             }
 
-            #ok-button {
-                background-color: rgb(226, 135, 9);
+            input {
+                background-color: inherit;
+                border: none;
+                border-bottom: solid 0.5px rgba(226, 135, 9, 0.3);
+                font: inherit;
+                font-size: 0.95rem;
+                width: 90%;
+                padding: 8px;
+                margin-bottom: 32px;
+                color: #aaa;
             }
 
-            #ok-button:hover {
-                background-color: rgb(196, 115, 3);
+            input:focus {
+                outline: none;
+                border-bottom: solid 0.5px rgba(226, 135, 9, 0.6);
+            }
+                
+            #box-header {
+                width: 100%;
+            }
+                
+            #box-header #box-title {
+                margin: 20px;
+                color: #aaa;
+                font-size: 1.1rem;
+                font-weight: 600;
             }
 
-            #ok-button:active {
-                background-color: rgb(183, 108, 3);
-            }
-
-            button:focus {
-                box-shadow: 0 0 0 2px rgba(226, 136, 9, 0.3);
-            }
-
-            @media (max-width: 480px) {
-                #input-box {
-                    padding: 20px;
-                    min-width: 280px;
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
                 }
-
-                #box-title {
-                    font-size: 18px;
+                to {
+                    opacity: 1;
                 }
+            }
 
-                #button-container {
-                    flex-direction: column-reverse;
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px) scale(0.95);
                 }
-
-                button {
-                    width: 100%;
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
                 }
             }
         </style>
