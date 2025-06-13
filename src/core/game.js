@@ -21,16 +21,33 @@ export class GameOfLife {
                 bufferGrid.setCellState(x, y, 1);
             }
         };
+        this.listeners = {
+            togglePlaying: [],
+            toggleGrid: [],
+            reset: []
+        };
     }
 
-    toggle() {
+    addEventListener(event, callback) {
+        this.listeners[event].push({ event: event, callback: callback });
+    }
+
+    updateEventListeners(event) {
+        this.listeners[event].forEach((listener) => {
+            listener.callback();
+        });
+    }
+
+    togglePlaying() {
         this.isPlaying ? this.gridRenderer.cancelRender() : this.gridRenderer.render();
         this.isPlaying = !this.isPlaying;
+        this.updateEventListeners("togglePlaying");
     }
 
     toggleGridLines() {
         this.gridRenderer.gridLinesEnabled = !this.gridRenderer.gridLinesEnabled;
         !this.isPlaying && this.gridRenderer.renderFrame();
+        this.updateEventListeners("toggleGrid");
     }
 
     reset() {
@@ -39,5 +56,6 @@ export class GameOfLife {
         this.gridRenderer.clearCanvas();
         this.gridRenderer.renderGridLines();
         this.isPlaying = false;
+        this.updateEventListeners("reset");
     }
 }

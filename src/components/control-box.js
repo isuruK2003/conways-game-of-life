@@ -11,45 +11,51 @@ class ControlBox extends HTMLElement {
     set game(newGame) {
         if (this._game) this._game.reset();
 
-        this._game = newGame;
+        this.shadowRoot.querySelector("#play-pause-button").addEventListener('click', () => { newGame.togglePlaying() });
+        this.shadowRoot.querySelector("#grid-toggle-button").addEventListener('click', () => { newGame.toggleGridLines() });
+        this.shadowRoot.querySelector("#reset-button").addEventListener('click', () => { newGame.reset() });
 
-        this.shadowRoot.querySelector("#play-pause-button").addEventListener('click', (e) => {
-            newGame.toggle();
+        newGame.addEventListener("togglePlaying", () => {
             const img = this.shadowRoot.querySelector("#play-pause-button-img");
             img.src = newGame.isPlaying ? Icons.Pause : Icons.Play;
         });
 
-        this.shadowRoot.querySelector("#grid-toggle-button").addEventListener('click', (e) => {
-            newGame.toggleGridLines();
+        newGame.addEventListener("toggleGrid", () => {
             const img = this.shadowRoot.querySelector("#grid-toggle-button-img");
-            img.src = newGame.gridRenderer.gridLinesEnabled ? Icons.Grid : Icons.Grid;
+            img.src = newGame.gridRenderer.gridLinesEnabled ? Icons.GridOn : Icons.GridOff;
         });
 
-        this.shadowRoot.querySelector("#reset-button").addEventListener('click', (e) => {
-            newGame.reset();
+        newGame.addEventListener("reset", () => {
             const img = this.shadowRoot.querySelector("#play-pause-button-img");
             img.src = newGame.isPlaying ? Icons.Pause : Icons.Play;
         });
 
         this.shadowRoot.querySelector("#save-button").addEventListener('click', (e) => {
-            const inputBox = new InputBox();
-            inputBox.onOk = (name) => {
-                if (name) {
-                    localStorage.setItem(`pattern-${name}`, JSON.stringify(newGame.gridRenderer.cellGrid.cells));
-                    console.log(`Pattern "${name}" saved!`);
-                }
-            };
-            inputBox.show('Save Pattern', 'Enter pattern name...');
+            const hasPlaying = newGame.isPlaying;
+            hasPlaying && newGame.togglePlaying()
+            const grid = JSON.stringify(newGame.gridRenderer.cellGrid.cells);
+            const inputBox = new InputBox({
+                title: 'Save Pattern',
+                placeholder: 'Enter pattern name...',
+                onOk: (name) => {
+                    if (name) {
+                        localStorage.setItem(`pattern-${name}`, grid);
+                        hasPlaying && newGame.togglePlaying();
+                    }
+                },
+                onLeaving: () => {
+                    hasPlaying && newGame.togglePlaying();
+                },
+            });
+            inputBox.show();
         });
 
         this.shadowRoot.querySelector("#open-library-button").addEventListener('click', (e) => {
             const library = new PatternLibrary();
-            library.onPatternSelect = (pattern) => {
-                // Load the pattern into your game
-                newGame.loadPattern(pattern.pattern);
-            };
             library.show();
         });
+
+        this._game = newGame;
     }
 
     connectedCallback() {
@@ -62,13 +68,13 @@ class ControlBox extends HTMLElement {
                 <img src="${Icons.Reset}">
             </button>
             <button id="grid-toggle-button">
-                <img id="grid-toggle-button-img" src="${Icons.Grid}">
+                <img id="grid-toggle-button-img" src="${Icons.GridOn}">
             </button>
             <button id="save-button">
                 <img id="save-button-img" src="${Icons.Save}">
             </button>
             <button id="open-library-button">
-                <img id="open-library-button-img" src="${Icons.Apps}">
+                <img id="open-library-button-img" src="${Icons.OpenLibrary}">
             </button>
         </div>
 

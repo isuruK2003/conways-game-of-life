@@ -1,21 +1,238 @@
+import { Icons } from "../utils/icons.js"
+
+class PatternLibraryUtils {
+    static async loadSavedPatterns() {
+        /*
+         * Loads and returns saved patterns from localstorage.
+         * Items in the localstorage where the key has prefixed with "pattern-" is considered as a pattern.
+        */
+
+        const savedPatterns = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('pattern-')) {
+                try {
+                    const patternData = JSON.parse(localStorage.getItem(key));
+                    const name = key.replace('pattern-', '');
+                    savedPatterns.push({
+                        name: name,
+                        pattern: patternData,
+                        key: key
+                    });
+                } catch (error) {
+                    console.warn(`Could not parse pattern ${key}:`, error);
+                }
+            }
+        }
+
+        return savedPatterns;
+    }
+
+    static deleteSavedPattern(key) {
+        localStorage.removeItem(key);
+    }
+
+    static async loadPresets() {
+        /**
+         * Loads patterns from "assets/patterns/presets.json"
+         */
+        const presets = [];
+        return presets;
+    }
+}
+
 export class PatternLibrary extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.activeTab = 'presets';
-        this.presetPatterns = [];
-        this.savedPatterns = [];
         this.onPatternSelect = null;
         this.onClose = null;
     }
 
+    show() {
+        document.body.appendChild(this);
+        return this;
+    }
+
     connectedCallback() {
+        this.#render();
+        this.#setupEventListeners();
+        this.switchTab(this.activeTab);
+    }
+
+    async switchTab(tabName) {
+        this.activeTab = tabName;
+
+        this.shadowRoot.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        this.shadowRoot.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        this.shadowRoot.querySelector(`#${tabName}-tab`).classList.add('active');
+        this.shadowRoot.querySelector(`#${tabName}-content`).classList.add('active');
+
+        tabName === 'saved' ? await this.#renderSavedPatterns() : this.#renderPresets();
+    }
+
+    async #renderPresets() {
+        const presetsList = this.shadowRoot.querySelector('#presets-list');
+        presetsList.innerHTML = `
+            <div class="loading">Loading presets...</div>
+        `;
+        const presetPatterns = await PatternLibraryUtils.loadPresets();
+        if (presetPatterns.length === 0) {
+            presetsList.innerHTML = `
+                <div class="no-patterns-state">
+                    <div class="icon">
+                        <img src="${Icons.NoContent}">
+                    </div>
+                    <div class="title">No presets are available</div>
+                </div>
+            `;
+            return;
+        }
+
+        presetsList.innerHTML = '';
+
+        this.presetPatterns.forEach((pattern, index) => {
+            const item = this.#createPatternItem(pattern, index, false);
+            presetsList.appendChild(item);
+        });
+    }
+
+    async #renderSavedPatterns() {
+        const savedList = this.shadowRoot.querySelector('#saved-list');
+        savedList.innerHTML = `
+            <div class="loading">Loading presets...</div>
+        `;
+        const savedPatterns = await PatternLibraryUtils.loadSavedPatterns();
+        if (savedPatterns.length === 0) {
+            savedList.innerHTML = `
+                <div class="no-patterns-state">
+                    <div class="icon">
+                        <img src="${Icons.NoContent}">
+                    </div>
+                    <div class="title">No saved patterns</div>
+                    <div class="description">Save some patterns from the game to see them here</div>
+                </div>
+            `;
+        } else {
+            savedList.innerHTML = '';
+            savedPatterns.forEach((pattern, index) => {
+                const item = this.#createPatternItem(pattern, index, true);
+                savedList.appendChild(item);
+            });
+        }
+    }
+
+    #createPatternItem(pattern, index, isSaved) {
+        const item = document.createElement('div');
+        item.className = `pattern-item ${isSaved ? 'saved' : ''}`;
+
+        // Add pattern preview
+        const preview = this.#createPatternPreview(pattern.pattern);
+        item.appendChild(preview);
+
+        const name = document.createElement('div');
+        name.className = 'pattern-name';
+        name.textContent = pattern.name;
+
+        item.appendChild(name);
+
+        if (isSaved) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-button';
+            deleteBtn.innerHTML = '&#10005;';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Are you sure you want to delete this pattern?')) {
+                    PatternLibraryUtils.deleteSavedPattern(pattern.key)
+                    this.#renderSavedPatterns();
+                }
+            });
+            item.appendChild(deleteBtn);
+        }
+
+        item.addEventListener('click', () => {
+            if (this.onPatternSelect) {
+                this.onPatternSelect(pattern);
+            }
+            this.remove();
+        });
+
+        return item;
+    }
+
+    #createPatternPreview(pattern) {
+        const preview = document.createElement('div');
+        preview.className = 'pattern-preview';
+
+        // Create an 8x8 grid for preview
+        for (let i = 0; i < 64; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'pattern-cell';
+
+            const row = Math.floor(i / 8);
+            const col = i % 8;
+
+            // Check if this cell should be alive based on the pattern
+            if (pattern && pattern[row] && pattern[row][col]) {
+                cell.classList.add('alive');
+            }
+
+            preview.appendChild(cell);
+        }
+
+        return preview;
+    }
+
+    #setupEventListeners() {
+        // Close button
+        this.shadowRoot.querySelector('#close-button').addEventListener('click', () => {
+            if (this.onClose) this.onClose();
+            this.remove();
+        });
+
+        // Tab switching
+        this.shadowRoot.querySelector('#presets-tab').addEventListener('click', () => {
+            this.switchTab('presets');
+        });
+
+        this.shadowRoot.querySelector('#saved-tab').addEventListener('click', () => {
+            this.switchTab('saved');
+        });
+
+        // Backdrop click
+        this.shadowRoot.querySelector('#library-container').addEventListener('click', (e) => {
+            if (e.target.id === 'library-container') {
+                if (this.onClose) this.onClose();
+                this.remove();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.onClose) this.onClose();
+                this.remove();
+            }
+        });
+    }
+
+    #render() {
         this.shadowRoot.innerHTML = `
         <div id="library-container">
             <div id="library-modal">
                 <div id="library-header">
-                    <h2>Pattern Library</h2>
-                    <button id="close-button">&#10005;</button>
+                    <h2>Library</h2>
+                    <button id="close-button">
+                        <span>&#10005;</span>
+                    </button>
                 </div>
                 
                 <div id="tab-container">
@@ -25,15 +242,11 @@ export class PatternLibrary extends HTMLElement {
                 
                 <div id="content-container">
                     <div id="presets-content" class="tab-content active">
-                        <div id="presets-list" class="pattern-list">
-                            <div class="loading">Loading presets...</div>
-                        </div>
+                        <div id="presets-list" class="pattern-list"></div>
                     </div>
                     
                     <div id="saved-content" class="tab-content">
-                        <div id="saved-list" class="pattern-list">
-                            <div class="empty-state">No saved patterns</div>
-                        </div>
+                        <div id="saved-list" class="pattern-list"></div>
                     </div>
                 </div>
             </div>
@@ -78,31 +291,31 @@ export class PatternLibrary extends HTMLElement {
 
             #library-header h2 {
                 margin: 0;
-                color: #fff;
-                font-size: 1.4rem;
+                color: #ccc;
+                font-size: 1.1rem;
                 font-weight: 600;
             }
 
             #close-button {
-                background: none;
+                color: #ccc;
+                width: 32px;
+                height: 32px;
                 border: none;
-                color: #999;
-                font-size: 1.2rem;
+                border-radius: 8px;
+                background: #333;
+                font-size: 14px;
+                font-weight: bold;
                 cursor: pointer;
-                padding: 8px;
-                border-radius: 6px;
-                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 32px;
-                height: 32px;
+                transition: all 0.3s ease;
+                line-height: 1;
             }
 
             #close-button:hover {
-                background: #333;
+                background: #444;
                 color: #fff;
-                transform: scale(1.1);
             }
 
             #tab-container {
@@ -225,7 +438,7 @@ export class PatternLibrary extends HTMLElement {
             }
 
             .pattern-name {
-                color: #fff;
+                color: #ccc;
                 font-size: 0.85rem;
                 font-weight: 500;
                 text-align: center;
@@ -282,16 +495,20 @@ export class PatternLibrary extends HTMLElement {
                 animation: pulse 1.5s ease-in-out infinite;
             }
 
-            .error-state .icon,
-            .no-patterns-state .icon {
+            .error-state .icon, .no-patterns-state .icon {
                 font-size: 2.5rem;
                 margin-bottom: 12px;
                 opacity: 0.7;
             }
+            
+            .icon img {
+                width: 75px;
+                opacity: 0.75;
+            }
 
             .error-state .title,
             .no-patterns-state .title {
-                color: #fff;
+                color: #ccc;
                 font-size: 1.1rem;
                 font-weight: 600;
                 margin-bottom: 8px;
@@ -434,243 +651,6 @@ export class PatternLibrary extends HTMLElement {
             }
         </style>
         `;
-
-        this.setupEventListeners();
-        this.loadPatterns();
-    }
-
-    setupEventListeners() {
-        // Close button
-        this.shadowRoot.querySelector('#close-button').addEventListener('click', () => {
-            if (this.onClose) this.onClose();
-            this.remove();
-        });
-
-        // Tab switching
-        this.shadowRoot.querySelector('#presets-tab').addEventListener('click', () => {
-            this.switchTab('presets');
-        });
-
-        this.shadowRoot.querySelector('#saved-tab').addEventListener('click', () => {
-            this.switchTab('saved');
-        });
-
-        // Backdrop click
-        this.shadowRoot.querySelector('#library-container').addEventListener('click', (e) => {
-            if (e.target.id === 'library-container') {
-                if (this.onClose) this.onClose();
-                this.remove();
-            }
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (this.onClose) this.onClose();
-                this.remove();
-            }
-        });
-    }
-
-    switchTab(tabName) {
-        this.activeTab = tabName;
-
-        // Update tab buttons
-        this.shadowRoot.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        this.shadowRoot.querySelector(`#${tabName}-tab`).classList.add('active');
-
-        // Update tab content
-        this.shadowRoot.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        this.shadowRoot.querySelector(`#${tabName}-content`).classList.add('active');
-
-        // Load saved patterns when switching to saved tab
-        if (tabName === 'saved') {
-            this.loadSavedPatterns();
-        }
-    }
-
-    async loadPatterns() {
-        try {
-            const presetsList = this.shadowRoot.querySelector('#presets-list');
-            presetsList.innerHTML = '<div class="loading">Loading presets...</div>';
-
-            // Load the JSON file
-            const response = await fetch('../assets/patterns/presets.json');
-            if (!response.ok) {
-                throw new Error(`Failed to load presets.json: ${response.status}`);
-            }
-
-            const patterns = await response.json();
-
-            // Convert object to array and filter out empty patterns
-            if (typeof patterns === 'object' && !Array.isArray(patterns)) {
-                const validPatterns = Object.keys(patterns)
-                    .filter(key => {
-                        const pattern = patterns[key];
-                        // Filter out empty arrays or invalid patterns
-                        return pattern && Array.isArray(pattern) && pattern.length > 0;
-                    })
-                    .map(key => ({
-                        name: key,
-                        pattern: patterns[key]
-                    }));
-
-                if (validPatterns.length > 0) {
-                    this.presetPatterns = validPatterns;
-                    this.renderPresets();
-                } else {
-                    this.showNoPresetsMessage();
-                }
-            } else {
-                throw new Error('Invalid JSON format - expected object with pattern names as keys');
-            }
-
-        } catch (error) {
-            console.error('Error loading preset patterns:', error);
-            this.showNoPresetsMessage();
-        }
-    }
-
-    showNoPresetsMessage() {
-        const presetsList = this.shadowRoot.querySelector('#presets-list');
-        presetsList.innerHTML = `
-            <div class="no-patterns-state">
-                <div class="icon">📋</div>
-                <div class="title">No presets are available</div>
-            </div>
-        `;
-    }
-
-    renderPresets() {
-        const presetsList = this.shadowRoot.querySelector('#presets-list');
-
-        if (this.presetPatterns.length === 0) {
-            this.showNoPresetsMessage();
-            return;
-        }
-
-        presetsList.innerHTML = '';
-
-        this.presetPatterns.forEach((pattern, index) => {
-            const item = this.createPatternItem(pattern, index, false);
-            presetsList.appendChild(item);
-        });
-    }
-
-    loadSavedPatterns() {
-        const savedList = this.shadowRoot.querySelector('#saved-list');
-        const savedPatterns = [];
-
-        // Load patterns from localStorage
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('pattern-')) {
-                try {
-                    const patternData = JSON.parse(localStorage.getItem(key));
-                    const name = key.replace('pattern-', '');
-                    savedPatterns.push({
-                        name: name,
-                        pattern: patternData,
-                        key: key
-                    });
-                } catch (error) {
-                    console.warn(`Could not parse pattern ${key}:`, error);
-                }
-            }
-        }
-
-        this.savedPatterns = savedPatterns;
-
-        if (savedPatterns.length === 0) {
-            savedList.innerHTML = `
-                <div class="no-patterns-state">
-                    <div class="icon">💾</div>
-                    <div class="title">No saved patterns</div>
-                    <div class="description">Save some patterns from the game to see them here</div>
-                </div>
-            `;
-        } else {
-            savedList.innerHTML = '';
-            savedPatterns.forEach((pattern, index) => {
-                const item = this.createPatternItem(pattern, index, true);
-                savedList.appendChild(item);
-            });
-        }
-    }
-
-    createPatternItem(pattern, index, isSaved) {
-        const item = document.createElement('div');
-        item.className = `pattern-item ${isSaved ? 'saved' : ''}`;
-
-        // Add pattern preview
-        const preview = this.createPatternPreview(pattern.pattern);
-        item.appendChild(preview);
-
-        const name = document.createElement('div');
-        name.className = 'pattern-name';
-        name.textContent = pattern.name;
-
-        item.appendChild(name);
-
-        if (isSaved) {
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-button';
-            deleteBtn.innerHTML = '&#10005;';
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.deletePattern(pattern.key);
-            });
-            item.appendChild(deleteBtn);
-        }
-
-        item.addEventListener('click', () => {
-            if (this.onPatternSelect) {
-                this.onPatternSelect(pattern);
-            }
-            this.remove();
-        });
-
-        return item;
-    }
-
-    createPatternPreview(pattern) {
-        const preview = document.createElement('div');
-        preview.className = 'pattern-preview';
-
-        // Create an 8x8 grid for preview
-        for (let i = 0; i < 64; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'pattern-cell';
-
-            const row = Math.floor(i / 8);
-            const col = i % 8;
-
-            // Check if this cell should be alive based on the pattern
-            if (pattern && pattern[row] && pattern[row][col]) {
-                cell.classList.add('alive');
-            }
-
-            preview.appendChild(cell);
-        }
-
-        return preview;
-    }
-
-    deletePattern(key) {
-        if (confirm('Are you sure you want to delete this pattern?')) {
-            localStorage.removeItem(key);
-            this.loadSavedPatterns();
-        }
-    }
-
-    // Public method to show the library
-    show() {
-        document.body.appendChild(this);
-        return this;
     }
 }
 
